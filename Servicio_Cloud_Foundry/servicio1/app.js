@@ -1,3 +1,4 @@
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -28,6 +29,35 @@ app.get('/autor', (req, res) => {
         servicio: 'Cloud Foundry en IBM Cloud' 
       }
       );
+});
+
+const ToneAnalyzerV3 = require('ibm-watson/tone-analyzer/v3');
+const { IamAuthenticator } = require('ibm-watson/auth');
+
+const toneAnalyzer = new ToneAnalyzerV3({
+  version: '2017-09-21',
+  authenticator: new IamAuthenticator({
+    apikey: process.env.API_KEY,
+  }),
+  serviceUrl: process.env.API_URL,
+});
+
+
+app.post('/toneAnalyzer', (req, res) => {
+  const text = req.body.text;
+
+  const toneParams = {
+    toneInput: { 'text': text },
+    contentType: 'application/json',
+  };
+
+  toneAnalyzer.tone(toneParams)
+  .then(toneAnalysis => {
+    res.json(toneAnalysis);
+  })
+  .catch(err => {
+    res.json({error: true, message: err});
+  });
 });
 
 // catch 404 and forward to error handler
