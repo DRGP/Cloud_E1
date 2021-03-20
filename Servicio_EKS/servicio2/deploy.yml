@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servicio2-deploy
+  labels:
+    name: servicio2-deploy
+    app: servicio2-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: servicio2-pod
+      app: servicio2-app
+  template:
+    metadata:
+      name: servicio2-pod
+      labels:
+        name: servicio2-pod
+        app: servicio2-app
+    spec:
+      containers:
+        - name: servicio2-container
+          image: "590677500889.dkr.ecr.us-east-1.amazonaws.com/examen1:latest"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 128Mi
+              cpu: "0.2"
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5

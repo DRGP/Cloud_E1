@@ -8,6 +8,18 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Tone analysis' });
 });
 
+router.get('/autor', (req, res) => {
+  res.json(
+      { alumno: 'DG',
+        servicio: 'EKS en AWS' 
+      }
+      );
+});
+
+router.get('/healthcheck', (req, res) => {
+  res.send({status: 'Working'})
+})
+
 /* POST to Tone Analysis service */
 router.post('/toneAnalysis', function(req, res) {
   var data = JSON.stringify({"text":req.body.text});
@@ -24,9 +36,10 @@ router.post('/toneAnalysis', function(req, res) {
   axios(config)
   .then(function (response) {
     console.log(JSON.stringify(response.data));
-    var responseString = 'Tone analysis results:\n';
+    var responseString = '<h1>Tone analysis results:</h1>';
     for (const tone in response.data.result.document_tone.tones) {
-      responseString = responseString + `${tone.tone_name}: ${tone.score}.\n`;
+      console.log(tone);
+      responseString = responseString + `<h2>${response.data.result.document_tone.tones[tone].tone_name}: ${response.data.result.document_tone.tones[tone].score}.</h2>`;
     }
     res.send(responseString);
   })
